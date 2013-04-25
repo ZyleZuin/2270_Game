@@ -131,7 +131,7 @@ void Shoe::dealCard(Player player) {
 	player.addcard(cards[cards.size()] - 1);
 	cards.pop_back();
 	if (cards.size() < 2) {
-		cout << "DEBUG: Adding a new deck.\n"
+		cout << "DEBUG: Adding a new deck.\n";
 		// --
 		addDeck(1);
 	}

@@ -50,8 +50,8 @@ class Table {
 private:
 	int num_players;
 	int round;
-	vector<Player> players;
 public:
+	vector<Player> players;
 	void begin_round();
 	void player_turn(Player player);
 	void end_round();
