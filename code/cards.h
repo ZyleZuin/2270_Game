@@ -20,10 +20,10 @@ class Table;
 
 class Shoe {
 private:
-	vector<int> cards;
+	vector<char> cards;
 public:
-	char dealCard(Player player); // Add a new card to the deck
-	int addDeck(int numDecks); // Adds 52 cards
+	void dealCard(Player player); // Add a new card to the deck
+	void addDeck(int numDecks); // Adds 52 cards
 };
 
 class Player {
@@ -37,6 +37,7 @@ private:
 public:
 	vector<char> getHand();
 	bool busted();
+	void addcard();
 };
 
 
