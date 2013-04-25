@@ -158,4 +158,13 @@ bool Player::isbusted() {
 		return false;
 	}
 }
+string Player::get_name() {
+	return this->name;
+}
+void Player::addWin() {
+	this->wins++;
+}
 
+int Player::getWins() {
+	return this->wins;
+}
