@@ -31,12 +31,18 @@ private:
 	string name;
 	vector<char> hand;
 	int hand_value;
-	bool AI;
+	bool human;
 	int wins;
 	int loses;
 public:
 	vector<char> getHand();
 	bool busted();
+	int getValue();
+	bool isHuman();
+	void set_name();
+	string get_name();
+	int getWins();
+	void addWin();
 };
 
 
@@ -44,10 +50,13 @@ class Table {
 private:
 	int num_players;
 	int round;
+	vector<Player> players;
 public:
 	void begin_round();
-	void turn();
+	void player_turn(Player player);
 	void end_round();
+	int get_players();
+	void set_players(int players);
 };
 
 #endif /* CARDS_H_ */
