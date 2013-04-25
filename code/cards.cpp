@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <ctime>
 #include <cstdlib>
+#include <map>
 
 using namespace std;
 
@@ -20,10 +21,11 @@ int status = -1;
 
 int main(int argc, char* argv[]) {
 	srand(unsigned(time(0)));
+	shoe.addDeck(1);
 	table1.begin_round();
 	if (status == 0) {
 		for (int i = 0; i < table1.get_players(); i++) {
-			table1.player_turn(table1.players[i]);
+			table1.player_turn(*table1.players[i]);
 		}
 	}
 	table1.end_round();
@@ -41,11 +43,17 @@ void Table::begin_round() {
 	} else {
 		cout << " ROUND " << this->round << endl;
 	}
+	// Create Players
+	for (int i = 0; i < this->num_players; i++) {
+	  Player* newPlayer = new Player;
+	  table1.players.push_back(newPlayer);
+	}
 	// DEAL HANDS
+
 	for (int i = 0; i < this->num_players; i++) {
 		cout << "Player " << i << endl;
-		table1.players[i].addcard();
-		table1.players[i].addcard();
+		table1.players[i]->addcard();
+		table1.players[i]->addcard();
 	}
 }
 void Table::player_turn(Player player) {
@@ -67,9 +75,9 @@ void Table::end_round() {
 	Player winner;
 	char decision;
 	for (int i = 0; i < table1.get_players(); i++) {
-		Player player = table1.players[i];
-		cout << player.get_name() << endl;
-		if (player.isbusted()) {
+		Player* player = table1.players[i];
+		cout << player->get_name() << endl;
+		if (player->isbusted()) {
 			cout << "BUSTED" << endl;
 		} else {
 			//  NEED TO HANDLE A TIE
@@ -78,7 +86,7 @@ void Table::end_round() {
 //			} else if (winner.getValue() < player.getValue) {
 //				winner = player;
 //			}
-			cout << player.getValue() << endl;
+			cout << player->getValue() << endl;
 		}
 	}
 	cout << "The Winner is: " << winner.get_name() << endl;
@@ -98,7 +106,6 @@ void Table::set_players(int players) {
 // Adds cards to a deck.
 void Shoe::addDeck(int numDecks) {
 	vector<char> cardsToAdd; // Add the cards.
-	cardsToAdd.push_back('1');
 	cardsToAdd.push_back('2');
 	cardsToAdd.push_back('3');
 	cardsToAdd.push_back('4');
@@ -126,20 +133,39 @@ void Shoe::addDeck(int numDecks) {
 }
 // Deals a card to a player
 char Shoe::dealCard() {
-	if (cards.size() < 2) {
-		cout << "DEBUG: Adding a new deck.\n";
-		// --
-		addDeck(1);
-	}
-	cout << "Giving a player card " << cards[cards.size() - 1];
-	char card = cards[cards.size() - 1];
-	cards.pop_back();
-	return card;
+  if (cards.size() < 2) {
+    cout << "DEBUG: Adding a new deck.\n";
+
+    addDeck(1);
+  }
+  cout << "Giving a player card " << cards[cards.size() - 1] << " " << endl;
+  char card = cards[cards.size() - 1];
+  cards.pop_back();
+  return card;
 }
 void Player::addcard() {
+  cout << "DEBUG: Trying to add card.\n";
 	// Player.hand.push_back(shoe.dealCard());
 	//Player.hand.push_back(shoe.dealCard());
-	this->hand.push_back(shoe.dealCard());
+  char newCard = shoe.dealCard();
+  this->hand.push_back(newCard);
+  
+  std::map<char, int> cardMap;
+  cardMap['2'] = 2;
+  cardMap['3'] = 2;
+  cardMap['4'] = 4;
+  cardMap['5'] = 5;
+  cardMap['6'] = 6;
+  cardMap['7'] = 7;
+  cardMap['8'] = 8;
+  cardMap['9'] = 9;
+  cardMap['J'] = 10;
+  cardMap['Q'] = 10;
+  cardMap['K'] = 10;
+  cardMap['A'] = 1;
+  this->hand_value += cardMap[newCard];
+    
+  cout << " DEBUG: added a card \n";
 }
 vector<char> Player::getHand() {
 	// for (int i = Shoe->cards.begin(); i != 3; i++) {
@@ -168,3 +194,4 @@ void Player::addWin() {
 int Player::getWins() {
 	return this->wins;
 }
+

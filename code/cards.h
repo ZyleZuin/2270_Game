@@ -52,7 +52,7 @@ private:
 	int num_players;
 	int round;
 public:
-	vector<Player> players;
+	vector<Player*> players;
 	void begin_round();
 	void player_turn(Player player);
 	void end_round();
