@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 	shoe.addDeck(1);
 	table1.begin_round();
 	if (status == 0) {
-		for (int i = 0; i < table1.get_players(); i++) {
+		for (int i = 0; i < table1.getPlayers(); i++) {
 			table1.player_turn(*table1.players[i]);
 		}
 	}
@@ -38,35 +38,37 @@ void Table::begin_round() {
 		cout << "WELCOME TO CS2270 BLACKJACK EDITION" << endl;
 		cout << "How Many Players: " << endl;
 		cin >> players;
-		this->set_players(players);
+		this->setPlayers(players);
 		cout << "ROUND 1!" << endl;
 	} else {
 		cout << " ROUND " << this->round << endl;
 	}
 	// Create Players
 	for (int i = 0; i < this->num_players; i++) {
-	  Player* newPlayer = new Player;
-	  table1.players.push_back(newPlayer);
+		Player* newPlayer = new Player;
+		newPlayer->setBusted(false);
+		newPlayer->setName("Jim");
+		table1.players.push_back(newPlayer);
 	}
 	// DEAL HANDS
 
 	for (int i = 0; i < this->num_players; i++) {
 		cout << "Player " << i << endl;
-		table1.players[i]->addcard();
-		table1.players[i]->addcard();
+		table1.players[i]->addToHand();
+		table1.players[i]->addToHand();
 	}
 }
 void Table::player_turn(Player player) {
 	// DEAL HANDS
 	char decision;
-	cout << player.get_name() << endl;
+	cout << player.getName() << endl;
 	while (decision != 'S') {
-		cout << "You are at " << player.getValue() << endl;
+		cout << "You are at " << player.getHandValue() << endl;
 		cout << "Would you like to Hit (H) or Stay (S)?" << endl;
 		cin >> decision;
-		if (player.getValue() > 21) {
+		if (player.getHandValue() > 21) {
 			cout << "You Busted!";
-			player.isbusted();
+			player.setBusted(true);
 			break;
 		}
 	}
@@ -74,10 +76,10 @@ void Table::player_turn(Player player) {
 void Table::end_round() {
 	Player winner;
 	char decision;
-	for (int i = 0; i < table1.get_players(); i++) {
+	for (int i = 0; i < table1.getPlayers(); i++) {
 		Player* player = table1.players[i];
-		cout << player->get_name() << endl;
-		if (player->isbusted()) {
+		cout << player->getName() << endl;
+		if (player->getBusted()) {
 			cout << "BUSTED" << endl;
 		} else {
 			//  NEED TO HANDLE A TIE
@@ -86,22 +88,28 @@ void Table::end_round() {
 //			} else if (winner.getValue() < player.getValue) {
 //				winner = player;
 //			}
-			cout << player->getValue() << endl;
+			cout << player->getHandValue() << endl;
 		}
 	}
-	cout << "The Winner is: " << winner.get_name() << endl;
-	winner.addWin();
+	cout << "The Winner is: " << winner.getName() << endl;
+	winner.setWins(winner.getWins() + 1);
 	cout << "This Player has " << winner.getWins() << " wins!" << endl;
 
 //	cout << endl;
 //	cout << "Would you like to play another round? Y/N" << endl;
 //	cin >> decision;
 }
-int Table::get_players() {
+int Table::getPlayers() {
 	return this->num_players;
 }
-void Table::set_players(int players) {
+void Table::setPlayers(int players) {
 	this->num_players = players;
+}
+int Table::getRound() {
+	return this->round;
+}
+void Table::setRound(int round) {
+	this->round = round;
 }
 // Adds cards to a deck.
 void Shoe::addDeck(int numDecks) {
@@ -133,39 +141,39 @@ void Shoe::addDeck(int numDecks) {
 }
 // Deals a card to a player
 char Shoe::dealCard() {
-  if (cards.size() < 2) {
-    cout << "DEBUG: Adding a new deck.\n";
+	if (cards.size() < 2) {
+		cout << "DEBUG: Adding a new deck.\n";
 
-    addDeck(1);
-  }
-  cout << "Giving a player card " << cards[cards.size() - 1] << " " << endl;
-  char card = cards[cards.size() - 1];
-  cards.pop_back();
-  return card;
+		addDeck(1);
+	}
+	cout << "Giving a player card " << cards[cards.size() - 1] << " " << endl;
+	char card = cards[cards.size() - 1];
+	cards.pop_back();
+	return card;
 }
-void Player::addcard() {
-  cout << "DEBUG: Trying to add card.\n";
+void Player::addToHand() {
+	cout << "DEBUG: Trying to add card.\n";
 	// Player.hand.push_back(shoe.dealCard());
 	//Player.hand.push_back(shoe.dealCard());
-  char newCard = shoe.dealCard();
-  this->hand.push_back(newCard);
-  
-  std::map<char, int> cardMap;
-  cardMap['2'] = 2;
-  cardMap['3'] = 2;
-  cardMap['4'] = 4;
-  cardMap['5'] = 5;
-  cardMap['6'] = 6;
-  cardMap['7'] = 7;
-  cardMap['8'] = 8;
-  cardMap['9'] = 9;
-  cardMap['J'] = 10;
-  cardMap['Q'] = 10;
-  cardMap['K'] = 10;
-  cardMap['A'] = 1;
-  this->hand_value += cardMap[newCard];
-    
-  cout << " DEBUG: added a card \n";
+	char newCard = shoe.dealCard();
+	this->hand.push_back(newCard);
+
+	std::map<char, int> cardMap;
+	cardMap['2'] = 2;
+	cardMap['3'] = 2;
+	cardMap['4'] = 4;
+	cardMap['5'] = 5;
+	cardMap['6'] = 6;
+	cardMap['7'] = 7;
+	cardMap['8'] = 8;
+	cardMap['9'] = 9;
+	cardMap['J'] = 10;
+	cardMap['Q'] = 10;
+	cardMap['K'] = 10;
+	cardMap['A'] = 1;
+	this->handValue += cardMap[newCard];
+
+	cout << " DEBUG: added a card \n";
 }
 vector<char> Player::getHand() {
 	// for (int i = Shoe->cards.begin(); i != 3; i++) {
@@ -174,24 +182,40 @@ vector<char> Player::getHand() {
 	cout << "Your cards are: " << hand.at(0) << " " << hand.at(1) << endl;
 	return hand;
 }
-int Player::getValue() {
-	return this->hand_value;
+bool Player::getBusted() {
+	return this->busted;
 }
-bool Player::isbusted() {
-	if (hand_value > 21) {
-		return true;
-	} else {
-		return false;
-	}
+void Player::setBusted(bool busted) {
+	this->busted = busted;
 }
-string Player::get_name() {
+int Player::getHandValue() {
+	return this->handValue;
+}
+void Player::setHandValue(int value) {
+	this->handValue = value;
+}
+bool Player::getHuman() {
+	return this->human;
+}
+void Player::setHuman(bool human) {
+	this->human = human;
+}
+string Player::getName() {
 	return this->name;
 }
-void Player::addWin() {
-	this->wins++;
+void Player::setName(string name) {
+	this->name = name;
 }
-
 int Player::getWins() {
 	return this->wins;
+}
+void Player::setWins(int wins) {
+	this->wins = wins;
+}
+int Player::getLoses() {
+	return this->loses;
+}
+void Player::setLoses(int loses) {
+	this->loses = loses;
 }
 

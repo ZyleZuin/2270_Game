@@ -28,23 +28,28 @@ public:
 
 class Player {
 private:
-	string name;
 	vector<char> hand;
-	int hand_value;
+	bool busted;
+	int handValue;
 	bool human;
+	string name;
 	int wins;
 	int loses;
 public:
 	vector<char> getHand();
-	bool isbusted();
-	void setBusted();
-	int getValue();
-	bool isHuman();
-	void set_name();
-	string get_name();
+	void addToHand();
+	bool getBusted();
+	void setBusted(bool busted);
+	int getHandValue();
+	void setHandValue(int value);
+	bool getHuman();
+	void setHuman(bool human);
+	string getName();
+	void setName(string name);
 	int getWins();
-	void addWin();
-	void addcard();
+	void setWins(int wins);
+	int getLoses();
+	void setLoses(int loses);
 };
 
 class Table {
@@ -56,8 +61,10 @@ public:
 	void begin_round();
 	void player_turn(Player player);
 	void end_round();
-	int get_players();
-	void set_players(int players);
+	int getPlayers();
+	void setPlayers(int players);
+	int getRound();
+	void setRound(int round);
 };
 
 #endif /* CARDS_H_ */
