@@ -14,26 +14,40 @@
 
 using namespace std;
 
-class Card;
-class Deck;
+class Shoe;
+class Player;
+class Table;
 
-class Deck {
+class Shoe {
 private:
-	vector<Card> cards; // Index is position in the deck
+	vector<int> cards;
 public:
-	int addCard(char index, string suit); // Add a new card to the deck
-	int removeCard();
-	int getSize(); // Returns size of deck
-	int moveCard(); // Send card to another deck
+	char dealCard(Player player); // Add a new card to the deck
+	int addDeck(int numDecks); // Adds 52 cards
 };
 
-class Card {
+class Player {
 private:
-	char index;
-	string suit;
-	string color;
+	string name;
+	vector<char> hand;
+	int hand_value;
+	bool AI;
+	int wins;
+	int loses;
 public:
+	vector<char> getHand();
+	bool busted();
 };
 
+
+class Table {
+private:
+	int num_players;
+	int round;
+public:
+	void begin_round();
+	void turn();
+	void end_round();
+};
 
 #endif /* CARDS_H_ */
