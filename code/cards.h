@@ -22,7 +22,7 @@ class Shoe {
 private:
 	vector<char> cards;
 public:
-	void dealCard(Player player); // Add a new card to the deck
+	char dealCard(); // Add a new card to the deck
 	void addDeck(int numDecks); // Adds 52 cards
 };
 
@@ -36,14 +36,15 @@ private:
 	int loses;
 public:
 	vector<char> getHand();
-	bool busted();
+	bool isbusted();
+	void setBusted();
 	int getValue();
 	bool isHuman();
 	void set_name();
 	string get_name();
 	int getWins();
 	void addWin();
-	void addcard(char card);
+	void addcard();
 };
 
 class Table {

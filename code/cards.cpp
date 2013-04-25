@@ -44,21 +44,21 @@ void Table::begin_round() {
 	// DEAL HANDS
 	for (int i = 0; i < this->num_players; i++) {
 		cout << "Player " << i << endl;
-		shoe.dealCard(this->players[i]);
-		shoe.dealCard(this->players[i]);
+		table1.players[i].addcard();
+		table1.players[i].addcard();
 	}
 }
 void Table::player_turn(Player player) {
 	// DEAL HANDS
 	char decision;
 	cout << player.get_name() << endl;
-	while (decision != "S") {
+	while (decision != 'S') {
 		cout << "You are at " << player.getValue() << endl;
 		cout << "Would you like to Hit (H) or Stay (S)?" << endl;
 		cin >> decision;
 		if (player.getValue() > 21) {
 			cout << "You Busted!";
-			player.busted() = true;
+			player.isbusted();
 			break;
 		}
 	}
@@ -69,15 +69,15 @@ void Table::end_round() {
 	for (int i = 0; i < table1.get_players(); i++) {
 		Player player = table1.players[i];
 		cout << player.get_name() << endl;
-		if (player.busted()) {
+		if (player.isbusted()) {
 			cout << "BUSTED" << endl;
 		} else {
 			//  NEED TO HANDLE A TIE
-			if (winner == NULL) {
-				winner = player;
-			} else if (winner.getValue() < player.getValue) {
-				winner = player;
-			}
+//			if (winner == NULL) {
+//				winner = player;
+//			} else if (winner.getValue() < player.getValue) {
+//				winner = player;
+//			}
 			cout << player.getValue() << endl;
 		}
 	}
@@ -124,28 +124,23 @@ void Shoe::addDeck(int numDecks) {
 	cout << "DEBUG, first two cards care: " << cards[1] << " " << cards[2]
 			<< endl; // --
 }
-
 // Deals a card to a player
-void Shoe::dealCard(Player player) {
-	cout << "Giving a player card " << cards[cards.size() - 1];
-	player.addcard(cards[cards.size()] - 1);
-	cards.pop_back();
+char Shoe::dealCard() {
 	if (cards.size() < 2) {
 		cout << "DEBUG: Adding a new deck.\n";
 		// --
 		addDeck(1);
 	}
+	cout << "Giving a player card " << cards[cards.size() - 1];
+	char card = cards[cards.size() - 1];
+	cards.pop_back();
+	return card;
 }
-void Player::addcard(char card) {
+void Player::addcard() {
 	// Player.hand.push_back(shoe.dealCard());
 	//Player.hand.push_back(shoe.dealCard());
-	for (int i = Shoe->cards.begin(); i != Shoe->cards.end(); i++) {
-		for (int j = 0; j < 2; j++) {
-			hand.push_back(j);
-		}
-	}
+	this->hand.push_back(shoe.dealCard());
 }
-
 vector<char> Player::getHand() {
 	// for (int i = Shoe->cards.begin(); i != 3; i++) {
 	//   hand.push_back(i);
@@ -153,18 +148,14 @@ vector<char> Player::getHand() {
 	cout << "Your cards are: " << hand.at(0) << " " << hand.at(1) << endl;
 	return hand;
 }
-
-int Player::getvalue() {
-	return Player.hand_value;
+int Player::getValue() {
+	return this->hand_value;
 }
-
-bool Player::busted() {
-	if (Player.hand_value > 21) {
-		cout << "You busted!" << endl;
-		Player->loses++;
+bool Player::isbusted() {
+	if (hand_value > 21) {
 		return true;
-	} else
+	} else {
 		return false;
-
+	}
 }
 

@@ -5,6 +5,6 @@ EXPENDABLES = cards
 all:
 	@make $(EXPENDABLES)
 cards: cards.cpp
-	g++ -Wall -gstabs cards.cpp -o cards
+	g++ -m32 -Wall -gstabs cards.cpp -o cards
 clean:
 	rm $(EXPENDABLES)
