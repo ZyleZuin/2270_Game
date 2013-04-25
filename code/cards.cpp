@@ -136,4 +136,35 @@ void Shoe::dealCard(Player player) {
 		addDeck(1);
 	}
 }
+void Player::addcard(char card) {
+	// Player.hand.push_back(shoe.dealCard());
+	//Player.hand.push_back(shoe.dealCard());
+	for (int i = Shoe->cards.begin(); i != Shoe->cards.end(); i++) {
+		for (int j = 0; j < 2; j++) {
+			hand.push_back(j);
+		}
+	}
+}
+
+vector<char> Player::getHand() {
+	// for (int i = Shoe->cards.begin(); i != 3; i++) {
+	//   hand.push_back(i);
+	// }
+	cout << "Your cards are: " << hand.at(0) << " " << hand.at(1) << endl;
+	return hand;
+}
+
+int Player::getvalue() {
+	return Player.hand_value;
+}
+
+bool Player::busted() {
+	if (Player.hand_value > 21) {
+		cout << "You busted!" << endl;
+		Player->loses++;
+		return true;
+	} else
+		return false;
+
+}
 
