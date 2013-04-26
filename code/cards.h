@@ -58,7 +58,7 @@ private:
 public:
 	vector<Player*> players;
 	void begin_round();
-	void player_turn(Player player);
+	void player_turn(Player* player);
 	void end_round();
 	int getPlayers();
 	void setPlayers(int players);

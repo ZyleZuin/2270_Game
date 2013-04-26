@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 		table1.begin_round();
 		// Cycle Through Players
 		for (int i = 0; i < table1.getPlayers(); i++) {
-			table1.player_turn(*table1.players[i]);
+			table1.player_turn(table1.players[i]);
 		}
 		//End the round
 		table1.end_round();
@@ -80,13 +80,13 @@ void Table::begin_round() {
 		table1.players[i]->addToHand();
 	}
 }
-void Table::player_turn(Player player) {
+void Table::player_turn(Player* player) {
 	// DEAL HANDS
 	bool done = false;
 	char decision;
-	cout << player.getName() << endl;
+	cout << player->getName() << endl;
 	while (decision != 'S') {
-		cout << "You are at " << player.getHandValue() << endl;
+		cout << "You are at " << player->getHandValue() << endl;
 		while (!done) {
 			cout << "Would you like to Hit (H) or Stay (S)?" << endl;
 			cin >> decision;
@@ -98,13 +98,13 @@ void Table::player_turn(Player player) {
 		}
 		done = false;
 		if (decision == 'H') {
-			player.addToHand();
+			player->addToHand();
 		}
-		if (player.getHandValue() > 21) {
+		if (player->getHandValue() > 21) {
 			cout << "You Busted!" << endl;
-			player.setBusted(true);
+			player->setBusted(true);
 			break;
-		}
+		} 
 	}
 }
 void Table::end_round() {
