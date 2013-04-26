@@ -118,7 +118,6 @@ void Table::end_round() {
 		  cout << player->getName() << " GOT BUSTED" << endl;
 		} else if ( player->getHandValue() == 21 ) { 
 		  winner.setName(player->getName());
-		  break;
 		}
 	}
 
