@@ -40,6 +40,7 @@ int main(int argc, char* argv[]) {
 }
 void Table::begin_round() {
 	int players;
+	vector<std::string> player_names;
 	status = 0;
 	// ROUND GREETING & SETUP
 	if (this->getRound() == 1) {
@@ -47,6 +48,16 @@ void Table::begin_round() {
 		cout << "How Many Players: " << endl;
 		cin >> players;
 		this->setPlayers(players);
+		
+		// Theoretically get some player names. 
+		for ( int j = 0; j < players; j++ ) {
+		  std::string player_name = "";
+		  cout << "PLAYER #" << j + 1 << " NAME: ";
+		  cin >> player_name;
+		  player_names.push_back(player_name);
+		  cout << endl;
+		}
+		  
 		cout << "ROUND 1!" << endl;
 	} else {
 		cout << " ROUND " << this->getRound() << endl;
@@ -57,7 +68,7 @@ void Table::begin_round() {
 		newPlayer->setBusted(false);
 		newPlayer->setHandValue(0);
 		newPlayer->setHuman(true);
-		newPlayer->setName("Jim");
+		newPlayer->setName(player_names[i]);
 		newPlayer->setWins(0);
 		newPlayer->setLoses(0);
 		table1.players.push_back(newPlayer);
