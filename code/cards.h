@@ -54,7 +54,7 @@ public:
 
 class Table {
 private:
-	int num_players;
+	int numPlayers;
 	int round;
 public:
 	vector<Player*> players;

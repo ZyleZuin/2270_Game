@@ -22,37 +22,49 @@ int status = -1;
 int main(int argc, char* argv[]) {
 	srand(unsigned(time(0)));
 	shoe.addDeck(1);
-	table1.begin_round();
-	if (status == 0) {
+	// Reset our Table
+	table1.setPlayers(0);
+	table1.setRound(0);
+	status = 0;
+	while (status == 0) {
+		table1.setRound(table1.getRound() + 1);
+		// Start the round
+		table1.begin_round();
+		// Cycle Through Players
 		for (int i = 0; i < table1.getPlayers(); i++) {
 			table1.player_turn(*table1.players[i]);
 		}
+		//End the round
+		table1.end_round();
 	}
-	table1.end_round();
 }
 void Table::begin_round() {
 	int players;
 	status = 0;
 	// ROUND GREETING & SETUP
-	if (this->round == 0) {
+	if (this->getRound() == 1) {
 		cout << "WELCOME TO CS2270 BLACKJACK EDITION" << endl;
 		cout << "How Many Players: " << endl;
 		cin >> players;
 		this->setPlayers(players);
 		cout << "ROUND 1!" << endl;
 	} else {
-		cout << " ROUND " << this->round << endl;
+		cout << " ROUND " << this->getRound() << endl;
 	}
 	// Create Players
-	for (int i = 0; i < this->num_players; i++) {
+	for (int i = 0; i < this->getPlayers(); i++) {
 		Player* newPlayer = new Player;
 		newPlayer->setBusted(false);
+		newPlayer->setHandValue(0);
+		newPlayer->setHuman(true);
 		newPlayer->setName("Jim");
+		newPlayer->setWins(0);
+		newPlayer->setLoses(0);
 		table1.players.push_back(newPlayer);
 	}
 	// DEAL HANDS
 
-	for (int i = 0; i < this->num_players; i++) {
+	for (int i = 0; i < this->numPlayers; i++) {
 		cout << "Player " << i << endl;
 		table1.players[i]->addToHand();
 		table1.players[i]->addToHand();
@@ -66,8 +78,11 @@ void Table::player_turn(Player player) {
 		cout << "You are at " << player.getHandValue() << endl;
 		cout << "Would you like to Hit (H) or Stay (S)?" << endl;
 		cin >> decision;
+		if (decision == 'H') {
+			player.addToHand();
+		}
 		if (player.getHandValue() > 21) {
-			cout << "You Busted!";
+			cout << "You Busted!" << endl;
 			player.setBusted(true);
 			break;
 		}
@@ -94,16 +109,16 @@ void Table::end_round() {
 	cout << "The Winner is: " << winner.getName() << endl;
 	winner.setWins(winner.getWins() + 1);
 	cout << "This Player has " << winner.getWins() << " wins!" << endl;
-
+	status = 1;
 //	cout << endl;
 //	cout << "Would you like to play another round? Y/N" << endl;
 //	cin >> decision;
 }
 int Table::getPlayers() {
-	return this->num_players;
+	return this->numPlayers;
 }
 void Table::setPlayers(int players) {
-	this->num_players = players;
+	this->numPlayers = players;
 }
 int Table::getRound() {
 	return this->round;
