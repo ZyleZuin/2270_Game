@@ -114,19 +114,14 @@ void Table::end_round() {
 	bool done = false;
 	for (int i = 0; i < table1.getPlayers(); i++) {
 		Player* player = table1.players[i];
-		cout << player->getName() << endl;
 		if (player->getBusted()) {
-			cout << "BUSTED" << endl;
-		} else {
-			//  NEED TO HANDLE A TIE
-//			if (winner == NULL) {
-//				winner = player;
-//			} else if (winner.getValue() < player.getValue) {
-//				winner = player;
-//			}
-			cout << player->getHandValue() << endl;
+		  cout << player->getName() << " GOT BUSTED" << endl;
+		} else if ( player->getHandValue() == 21 ) { 
+		  winner.setName(player->getName());
+		  break;
 		}
 	}
+
 	if (winner.getName() == "NULL") {
 		cout << "No Winner.  Everyone Busted!" << endl;
 	} else {
