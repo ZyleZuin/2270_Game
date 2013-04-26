@@ -36,7 +36,6 @@ private:
 	int wins;
 	int loses;
 public:
-	vector<char> getHand();
 	void addToHand();
 	bool getBusted();
 	void setBusted(bool busted);

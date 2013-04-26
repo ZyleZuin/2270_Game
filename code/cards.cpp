@@ -65,19 +65,27 @@ void Table::begin_round() {
 	// DEAL HANDS
 
 	for (int i = 0; i < this->numPlayers; i++) {
-		cout << "Player " << i << endl;
 		table1.players[i]->addToHand();
 		table1.players[i]->addToHand();
 	}
 }
 void Table::player_turn(Player player) {
 	// DEAL HANDS
+	bool done = false;
 	char decision;
 	cout << player.getName() << endl;
 	while (decision != 'S') {
 		cout << "You are at " << player.getHandValue() << endl;
-		cout << "Would you like to Hit (H) or Stay (S)?" << endl;
-		cin >> decision;
+		while (!done) {
+			cout << "Would you like to Hit (H) or Stay (S)?" << endl;
+			cin >> decision;
+			if (decision == 'H' || decision == 'S') {
+				done = true;
+			} else {
+				cout << "Invalid Input.  H or S" << endl;
+			}
+		}
+		done = false;
 		if (decision == 'H') {
 			player.addToHand();
 		}
@@ -90,7 +98,9 @@ void Table::player_turn(Player player) {
 }
 void Table::end_round() {
 	Player winner;
+	winner.setName("NULL");
 	char decision;
+	bool done = false;
 	for (int i = 0; i < table1.getPlayers(); i++) {
 		Player* player = table1.players[i];
 		cout << player->getName() << endl;
@@ -106,13 +116,26 @@ void Table::end_round() {
 			cout << player->getHandValue() << endl;
 		}
 	}
-	cout << "The Winner is: " << winner.getName() << endl;
-	winner.setWins(winner.getWins() + 1);
-	cout << "This Player has " << winner.getWins() << " wins!" << endl;
-	status = 1;
-//	cout << endl;
-//	cout << "Would you like to play another round? Y/N" << endl;
-//	cin >> decision;
+	if (winner.getName() == "NULL") {
+		cout << "No Winner.  Everyone Busted!" << endl;
+	} else {
+		cout << "The Winner is: " << winner.getName() << endl;
+		winner.setWins(winner.getWins() + 1);
+		cout << "This Player has " << winner.getWins() << " wins!" << endl;
+		cout << endl;
+	}
+	while (!done) {
+		cout << "Would you like to play another round? Y/N" << endl;
+		cin >> decision;
+		if (decision == 'N' || decision == 'Y') {
+			done = true;
+		} else {
+			cout << "Invalid Input.  Y or N" << endl;
+		}
+	}
+	if (decision == 'N') {
+		status = 1;
+	}
 }
 int Table::getPlayers() {
 	return this->numPlayers;
@@ -126,9 +149,9 @@ int Table::getRound() {
 void Table::setRound(int round) {
 	this->round = round;
 }
-// Adds cards to a deck.
 void Shoe::addDeck(int numDecks) {
-	vector<char> cardsToAdd; // Add the cards.
+	vector<char> cardsToAdd;
+	int size = 0;
 	cardsToAdd.push_back('2');
 	cardsToAdd.push_back('3');
 	cardsToAdd.push_back('4');
@@ -141,38 +164,24 @@ void Shoe::addDeck(int numDecks) {
 	cardsToAdd.push_back('Q');
 	cardsToAdd.push_back('K');
 	cardsToAdd.push_back('A');
-	for (int k = 0; k < numDecks; k++) {
-		for (int i = 0; i < cardsToAdd.size(); i++) {
-			for (int j = 0; j < 4; j++) {
-				cards.push_back(cardsToAdd[i]);
+	size = cardsToAdd.size();
+	for (int i = 0; i < numDecks; i++) {
+		for (int j = 0; j < size; j++) {
+			for (int k = 0; k < 4; k++) {
+				cards.push_back(cardsToAdd[k]);
 			}
 		}
 	}
-	// Now we just need to shuffle the values.
-
-	std::random_shuffle(cards.begin(), cards.end());
-	cout << "DEBUG, first two cards care: " << cards[1] << " " << cards[2]
-			<< endl; // --
+	random_shuffle(cards.begin(), cards.end());
 }
-// Deals a card to a player
 char Shoe::dealCard() {
-	if (cards.size() < 2) {
-		cout << "DEBUG: Adding a new deck.\n";
-
-		addDeck(1);
-	}
-	cout << "Giving a player card " << cards[cards.size() - 1] << " " << endl;
 	char card = cards[cards.size() - 1];
 	cards.pop_back();
 	return card;
 }
 void Player::addToHand() {
-	cout << "DEBUG: Trying to add card.\n";
-	// Player.hand.push_back(shoe.dealCard());
-	//Player.hand.push_back(shoe.dealCard());
 	char newCard = shoe.dealCard();
 	this->hand.push_back(newCard);
-
 	std::map<char, int> cardMap;
 	cardMap['2'] = 2;
 	cardMap['3'] = 2;
@@ -187,15 +196,6 @@ void Player::addToHand() {
 	cardMap['K'] = 10;
 	cardMap['A'] = 1;
 	this->handValue += cardMap[newCard];
-
-	cout << " DEBUG: added a card \n";
-}
-vector<char> Player::getHand() {
-	// for (int i = Shoe->cards.begin(); i != 3; i++) {
-	//   hand.push_back(i);
-	// }
-	cout << "Your cards are: " << hand.at(0) << " " << hand.at(1) << endl;
-	return hand;
 }
 bool Player::getBusted() {
 	return this->busted;
