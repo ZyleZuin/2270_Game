@@ -1,6 +1,7 @@
 /*
  * cards.cpp
  *
+ *  Blackjack - Now with some AI!
  *  Created on: Apr 24, 2013
  *      Author: Kyle Bruin, Cameron Bigelow, Matt Getty
  */
@@ -20,128 +21,171 @@ Shoe shoe;
 int status = -1;
 
 int main(int argc, char* argv[]) {
-	srand(unsigned(time(0)));
-	shoe.addDeck(1);
-	// Reset our Table
-	table1.setPlayers(0);
-	table1.setRound(0);
-	status = 0;
-	while (status == 0) {
-		table1.setRound(table1.getRound() + 1);
-		// Start the round
-		table1.begin_round();
-		// Cycle Through Players
-		for (int i = 0; i < table1.getPlayers(); i++) {
-			table1.player_turn(table1.players[i]);
-		}
-		//End the round
-		table1.end_round();
-	}
-}
-void Table::begin_round() {
-	int players;
-	vector<std::string> player_names;
-	status = 0;
-	// ROUND GREETING & SETUP
-	if (this->getRound() == 1) {
-		cout << "WELCOME TO CS2270 BLACKJACK EDITION" << endl;
-		cout << "How Many Players: " << endl;
-		cin >> players;
-		this->setPlayers(players);
-		
-		// Theoretically get some player names. 
-		for ( int j = 0; j < players; j++ ) {
-		  std::string player_name = "";
-		  cout << "PLAYER #" << j + 1 << " NAME: ";
-		  cin >> player_name;
-		  player_names.push_back(player_name);
-		  cout << endl;
-		}
-		  
-		cout << "ROUND 1!" << endl;
-	} else {
-		cout << " ROUND " << this->getRound() << endl;
-	}
-	// Create Players
-	for (int i = 0; i < this->getPlayers(); i++) {
-		Player* newPlayer = new Player;
-		newPlayer->setBusted(false);
-		newPlayer->setHandValue(0);
-		newPlayer->setHuman(true);
-		newPlayer->setName(player_names[i]);
-		newPlayer->setWins(0);
-		newPlayer->setLoses(0);
-		table1.players.push_back(newPlayer);
-	}
-	// DEAL HANDS
+  srand(unsigned(time(0)));
+  shoe.addDeck(1);
+  table1.setPlayers(0);
+  table1.setRound(0);
+  table1.init_game();  
 
-	for (int i = 0; i < this->numPlayers; i++) {
-		table1.players[i]->addToHand();
-		table1.players[i]->addToHand();
-	}
+  while (status == 0) {
+    table1.setRound(table1.getRound() + 1);
+    table1.clear_and_deal();
+    for (int i = 0; i < table1.getPlayers(); i++) {
+      table1.player_turn(table1.players[i]);
+    }
+    table1.end_round();
+    
+    cout << "Would you like to play another round? Y/N" << endl;
+    char decision;
+    cin >> decision;
+    if (decision == 'N') {
+      table1.final_tally();
+      status == -1;
+      break;
+    } else { cout << "Onto another round!\n"; }
+  }
 }
+
+void Table::init_game() {
+  int humanPlayers;
+  int aiPlayers;
+  vector<std::string> player_names;
+  status = 0;
+  
+  cout << "WELCOME TO CS2270 BLACKJACK EDITION\n";
+  cout << "How many AI players: \n";
+  cin >> aiPlayers;
+  cout << "How Many Players: \n";
+  cin >> humanPlayers;
+  cout << "Starting a game of Blackjack with " << humanPlayers + aiPlayers << " players\n";
+  this->setPlayers(humanPlayers + aiPlayers);
+  
+  // Theoretically get some player names. 
+  cout << "Name your human players:\n";
+  for ( int j = 0; j < humanPlayers; j++ ) {
+    std::string player_name = "";
+    cout << "HUMAN PLAYER #" << j + 1 << " NAME: ";
+    cin >> player_name;
+    create_player(player_name, true);
+    cout << endl;
+  }
+  cout << "Name your AI players.\n";
+  for ( int i = 0; i < aiPlayers; i++ ) {
+    std::string player_name = "";
+    cout << "AI PLAYER #" << i + 1 << " NAME: ";
+    cin >> player_name;
+    create_player(player_name, false);
+    cout << endl;
+    // Set them an AI player. 
+  }
+}
+
+void Table::clear_and_deal() {
+  for (int j = 0; j < this->numPlayers; j++) {
+    table1.players[j]->setHandValue(0);
+  }
+
+  for (int i = 0; i < this->numPlayers; i++) {
+    table1.players[i]->addToHand();
+    table1.players[i]->addToHand();
+  }
+}
+
+void Table::create_player(string playerName, bool human) {
+  Player* newPlayer = new Player;
+  newPlayer->setBusted(false);
+  newPlayer->setHandValue(0);
+  newPlayer->setHuman(human);
+  newPlayer->setName(playerName);
+  newPlayer->setWins(0);
+  newPlayer->setLoses(0);
+  table1.players.push_back(newPlayer);
+}
+
 void Table::player_turn(Player* player) {
-	// DEAL HANDS
-	bool done = false;
-	char decision;
-	cout << player->getName() << endl;
-	while (decision != 'S') {
-		cout << "You are at " << player->getHandValue() << endl;
-		while (!done) {
-			cout << "Would you like to Hit (H) or Stay (S)?" << endl;
-			cin >> decision;
-			if (decision == 'H' || decision == 'S') {
-				done = true;
-			} else {
-				cout << "Invalid Input.  H or S" << endl;
-			}
-		}
-		done = false;
-		if (decision == 'H') {
-			player->addToHand();
-		}
-		if (player->getHandValue() > 21) {
-			cout << "You Busted!" << endl;
-			player->setBusted(true);
-			break;
-		} 
-	}
+  if (player->isHuman()) { human_turn(player); }
+  else { ai_turn(player); }
+}
+
+void Table::ai_turn(Player* player) {
+  bool done = false;
+  while ( !done ) {
+    cout << "AI Player " << player->getName() << " is at " << player->getHandValue() << endl;
+    if ( player->getHandValue() < 18 ) {
+      cout << "AI PLayer " << player->getName() << " has decided to hit.\n";
+      player->addToHand();
+    } else { done = true; }
+  }
+  if ( player->getHandValue() > 21 ) {
+    player->setBusted(true);
+    cout << "AI Player " << player->getName() << " busted!\n";
+  }
+}
+
+void Table::human_turn(Player* player) {
+  bool done = false;
+  char decision;
+  cout << player->getName() << endl;
+  while (decision != 'S') {
+    cout << "You are at " << player->getHandValue() << endl;
+    while (!done) {
+      cout << "Would you like to Hit (H) or Stay (S)?" << endl;
+      cin >> decision;
+      if (decision == 'H' || decision == 'S') {	done = true; } else {
+	cout << "Invalid Input.  H or S" << endl; } }
+    
+    done = false;
+
+    if (decision == 'H') { player->addToHand(); }
+    if (player->getHandValue() > 21) {
+      cout << "You Busted!" << endl;
+      player->setBusted(true);
+      break; } 
+  }
 }
 void Table::end_round() {
-	Player winner;
-	winner.setName("NULL");
-	char decision;
-	bool done = false;
-	for (int i = 0; i < table1.getPlayers(); i++) {
-		Player* player = table1.players[i];
-		if (player->getBusted()) {
-		  cout << player->getName() << " GOT BUSTED" << endl;
-		} else if ( player->getHandValue() == 21 ) { 
-		  winner.setName(player->getName());
-		}
-	}
+   vector<Player*> winningPlayers;
+  vector<Player*> losingPlayers;
+  
+  // First determine what the high card is in the game.
+  int highCard = 0;
+  for (int i = 0; i < table1.getPlayers(); i++) {
+    Player* player = table1.players[i];
+    if ( player->getHandValue() <= 21 && player->getHandValue() > highCard ) {
+      highCard = player->getHandValue();
+    }
+  }
 
-	if (winner.getName() == "NULL") {
-		cout << "No Winner.  Everyone Busted!" << endl;
-	} else {
-		cout << "The Winner is: " << winner.getName() << endl;
-		winner.setWins(winner.getWins() + 1);
-		cout << "This Player has " << winner.getWins() << " wins!" << endl;
-		cout << endl;
-	}
-	while (!done) {
-		cout << "Would you like to play another round? Y/N" << endl;
-		cin >> decision;
-		if (decision == 'N' || decision == 'Y') {
-			done = true;
-		} else {
-			cout << "Invalid Input.  Y or N" << endl;
-		}
-	}
-	if (decision == 'N') {
-		status = 1;
-	}
+  // Add in who got a high card.
+  for (int i = 0; i < table1.getPlayers(); i++) {
+    Player* player = table1.players[i];
+    if ( player->getHandValue() == highCard ) {
+      winningPlayers.push_back(player);
+    } else { 
+      losingPlayers.push_back(player);
+  }
+
+  if (winningPlayers.size() > 1) { cout << "THERE WAS A TIE!\n"; }
+
+  for ( int j = 0; j < winningPlayers.size() ; j++ ) {
+    cout << winningPlayers[j]->getName() << " won with a hand of " << winningPlayers[j]->getHandValue() << endl;
+    winningPlayers[j]->setWins( winningPlayers[j]->getWins() + 1 );
+  }
+  for ( int j = 0; j < losingPlayers.size() ; j++ ) {
+    losingPlayers[j]->setLoses( losingPlayers[j]->getLoses() + 1 );
+  }
+  }
 }
+
+void Table::final_tally(){
+  for (int i = 0; i < table1.getPlayers(); i++){
+    Player* player = table1.players[i];
+    cout << "Player: " << player->getName() << " ";
+    cout << "won " << player->getWins() << " times and lost ";
+    cout << player->getLoses() << " times.\n";
+  }
+}
+
 int Table::getPlayers() {
 	return this->numPlayers;
 }
@@ -214,8 +258,8 @@ int Player::getHandValue() {
 void Player::setHandValue(int value) {
 	this->handValue = value;
 }
-bool Player::getHuman() {
-	return this->human;
+bool Player::isHuman() {
+  return this->human;
 }
 void Player::setHuman(bool human) {
 	this->human = human;

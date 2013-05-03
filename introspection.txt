@@ -1,1 +1,5 @@
-Introspection.txt
+Some further thoughts on implementing AI:
+Making sure that you're original design implementation is the most difficult.
+We came pretty close, but there turned out to be a few methods that made things a lot easier (mostly just little helper functions).
+Furthermore, seperating things helped quite a bit. Now we have the functionality to change things up a lot more. We could, for instance, change the AI decision structure very very easily.
+There'd be no really large mucking around with the inner workings(unless we did want to do something like count cards, then it would make sense to have an AI player instance that was more robust).

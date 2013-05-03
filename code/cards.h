@@ -1,8 +1,8 @@
 /*
  * cards.h
  *
- *  Created on: Apr 24, 2013
- *      Author: Kyle Bruin & Cameron Bigelow
+ *  
+ *      Author: Kyle Bruin & Cameron Bigelow & Matt Gettyo
  */
 
 #ifndef CARDS_H_
@@ -41,7 +41,7 @@ public:
 	void setBusted(bool busted);
 	int getHandValue();
 	void setHandValue(int value);
-	bool getHuman();
+	bool isHuman();
 	void setHuman(bool human);
 	string getName();
 	void setName(string name);
@@ -57,8 +57,13 @@ private:
 	int round;
 public:
 	vector<Player*> players;
-	void begin_round();
+	void init_game();
+	void final_tally();
+	void create_player(string playerName, bool human);
+	void clear_and_deal();
 	void player_turn(Player* player);
+	void ai_turn(Player* player);
+	void human_turn(Player* player);
 	void end_round();
 	int getPlayers();
 	void setPlayers(int players);
